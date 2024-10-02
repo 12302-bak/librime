@@ -74,6 +74,17 @@ bool ConfigData::LoadFromFile(const path& file_path, ConfigCompiler* compiler) {
   try {
     YAML::Node doc = YAML::LoadFile(file_path.string());
     root = ConvertFromYaml(doc, compiler);
+
+    std::cout << file_path.string() << std::endl;
+    std::cout << root -> ToString() << std::endl;
+
+    std::filesystem::path file_name(file_path.string());
+    std::string filename1 = file_name.filename().string();
+
+    std::string new_path = "/tmp/abc-" + filename1;
+    path out_file_path{new_path};  // 指定文件路径
+    //path out_file_path = "example_config.yaml";  // 指定文件路径
+    SaveToFile(out_file_path);
   } catch (YAML::Exception& e) {
     LOG(ERROR) << "Error parsing YAML \"" << file_path << "\" : " << e.what();
     return false;

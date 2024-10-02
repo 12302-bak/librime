@@ -25,6 +25,9 @@ class ConfigItem {
 
   virtual bool empty() const { return type_ == kNull; }
 
+  // 12302 添加纯虚函数 ToString
+  virtual std::string ToString() const = 0;
+
  protected:
   ConfigItem(ValueType type) : type_(type) {}
 
@@ -55,6 +58,10 @@ class ConfigValue : public ConfigItem {
 
   bool empty() const override { return value_.empty(); }
 
+  std::string ToString() const override {
+    return value_;
+  }
+
  protected:
   string value_;
 };
@@ -79,6 +86,19 @@ class ConfigList : public ConfigItem {
 
   bool empty() const override { return seq_.empty(); }
 
+  std::string ToString() const override {
+    std::stringstream ss;
+    ss << "[";
+    for (auto it = seq_.begin(); it != seq_.end(); ++it) {
+      if (it != seq_.begin()) {
+        ss << ", ";
+      }
+      ss << (*it)->ToString();
+    }
+    ss << "]";
+    return ss.str();
+  }
+
  protected:
   Sequence seq_;
 };
@@ -100,6 +120,19 @@ class ConfigMap : public ConfigItem {
   Iterator end();
 
   bool empty() const override { return map_.empty(); }
+
+  std::string ToString() const override {
+    std::stringstream ss;
+    ss << "{";
+    for (auto it = map_.begin(); it != map_.end(); ++it) {
+      if (it != map_.begin()) {
+        ss << ", ";
+      }
+      ss << it->first << ": " << it->second->ToString();
+    }
+    ss << "}";
+    return ss.str();
+  }
 
  protected:
   Map map_;
